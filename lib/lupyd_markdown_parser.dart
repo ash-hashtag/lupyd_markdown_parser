@@ -153,7 +153,7 @@ List<PatternMatcher> defaultMatchers() {
       true,
       true);
   final hyperLinkMatcher = RegexPatternMatcher.from(
-      RegExp(rawHashtagRegex), "hyperlink", noDelimiter, false, true);
+      RegExp(rawHyperLinkRegex), "hyperlink", noDelimiter, false, true);
 
   return [
     boldMatcher,
