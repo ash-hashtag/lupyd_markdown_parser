@@ -1,4 +1,4 @@
-import 'package:markdown_parser/markdown_parser.dart';
+import 'package:lupyd_markdown_parser/lupyd_markdown_parser.dart';
 
 void main(List<String> arguments) {
   test();

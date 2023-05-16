@@ -1,4 +1,4 @@
-import 'package:markdown_parser/tuple.dart';
+// import 'package:lupyd_markdown_parser/tuple.dart';
 
 bool areListsEqual<T>(List<T> a, List<T> b) {
   if (a == b) return true;
@@ -79,40 +79,41 @@ List<PatternMatchPart> parseText(
     return [inputPart];
   }
 
-  final patternMatches = <Tuple<Match, PatternMatcher>>[];
+  // final patternMatches = <Tuple<Match, PatternMatcher>>[];
+  final patternMatches = <(Match, PatternMatcher)>[];
   for (final patternMatcher in patternMatchers) {
     patternMatches.addAll(
-        patternMatcher.matcher(inputText).map((e) => Tuple(e, patternMatcher)));
+        patternMatcher.matcher(inputText).map((e) => (e, patternMatcher)));
   }
 
-  patternMatches.sort((a, b) => a.a.start - b.a.start);
+  patternMatches.sort((a, b) => a.$1.start - b.$1.start);
 
   var current = 0;
   var currentTypes = [...inputPart.type];
   for (final match in patternMatches) {
-    if (current > match.a.start) {
+    if (current > match.$1.start) {
       continue;
     }
-    if (current < match.a.start) {
+    if (current < match.$1.start) {
       final part = PatternMatchPart(
-          text: inputText.substring(current, match.a.start),
+          text: inputText.substring(current, match.$1.start),
           type: currentTypes);
       final result = parseText(part, patternMatchers);
       parts.addAll(result);
     }
 
-    final type = [if (!match.b.singleType) ...currentTypes, match.b.type];
+    final type = [if (!match.$2.singleType) ...currentTypes, match.$2.type];
     final part = PatternMatchPart(
-        text:
-            match.b.delimiter(inputText.substring(match.a.start, match.a.end)),
+        text: match.$2
+            .delimiter(inputText.substring(match.$1.start, match.$1.end)),
         type: type);
-    if (match.b.lookInwards) {
+    if (match.$2.lookInwards) {
       final result = parseText(part, patternMatchers);
       parts.addAll(result);
     } else {
       parts.add(part);
     }
-    current = match.a.end;
+    current = match.$1.end;
   }
   if (current < inputText.length) {
     final input = inputText.substring(current);
@@ -150,7 +151,7 @@ List<PatternMatcher> defaultMatchers() {
       "quote",
       tripleDelimiter,
       true,
-      false);
+      true);
   final hyperLinkMatcher = RegexPatternMatcher.from(
       RegExp(rawHashtagRegex), "hyperlink", noDelimiter, false, true);
 
